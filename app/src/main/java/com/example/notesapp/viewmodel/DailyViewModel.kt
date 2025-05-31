@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class DailyViewModel(private val repository: DailyRepository) : ViewModel() {
 
-    // UI uchun observable list
     private val _notes = MutableStateFlow<List<DailyNote>>(emptyList())
     val notes: StateFlow<List<DailyNote>> get() = _notes
 
@@ -25,6 +24,15 @@ class DailyViewModel(private val repository: DailyRepository) : ViewModel() {
         }
     }
 
+    fun permanentlyDeleteNote(note: DailyNote) {
+        viewModelScope.launch {
+            repository.deleteNote(note)  // To'liq o'chirish
+            loadNotes()
+        }
+    }
+
+
+
     fun addNote(note: DailyNote) {
         viewModelScope.launch {
             repository.insertNote(note)
@@ -35,10 +43,20 @@ class DailyViewModel(private val repository: DailyRepository) : ViewModel() {
     fun deleteNote(note: DailyNote) {
         viewModelScope.launch {
             repository.deleteNote(note)
-            loadNotes() // o‘chirishdan keyin ro‘yxatni yangilash
+            loadNotes()
         }
     }
 
+    // Yangilangan funksiya
+    fun deleteNoteById(id: Int) {
+        viewModelScope.launch {
+            val note = _notes.value.find { it.id == id }
+            note?.let {
+                repository.deleteNote(it)
+                loadNotes()
+            }
+        }
+    }
 
     fun updateNote(note: DailyNote) {
         viewModelScope.launch {
@@ -51,7 +69,6 @@ class DailyViewModel(private val repository: DailyRepository) : ViewModel() {
         return repository.getNoteById(id)
     }
 
-    // ViewModelFactory
     class Factory(private val repository: DailyRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return DailyViewModel(repository) as T
