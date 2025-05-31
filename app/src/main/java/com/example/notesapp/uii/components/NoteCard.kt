@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import com.example.notesapp.data.model.DailyNote
 import java.text.SimpleDateFormat
 import java.util.*
-
 @Composable
 fun NoteCard(
     note: DailyNote,
@@ -25,7 +24,10 @@ fun NoteCard(
             .clickable { onClick() },
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     text = note.title,
                     style = MaterialTheme.typography.titleLarge,
@@ -54,6 +56,7 @@ fun NoteCard(
         }
     }
 }
+
 
 fun formatDate(dateString: String): String {
     return try {
